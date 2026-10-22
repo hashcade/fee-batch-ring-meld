@@ -34,9 +34,8 @@ pub fn install() {
 }
 
 fn supported_game() -> bool {
-  if skyline::info::get_program_id() != profile::TITLE_ID {
-    return false;
-  }
+  // Cobalt does not export Skyline's get_program_id. The mapped executable
+  // identity and instruction checks below identify the supported game instead.
   let mut version = skyline::nn::oe::DisplayVersion { name: [0; 16] };
   unsafe {
     skyline::nn::oe::GetDisplayVersion(&mut version);
