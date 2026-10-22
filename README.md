@@ -8,14 +8,16 @@ The original menu and one original result presentation are retained. No hotkeys,
 
 ## Development
 
-This repository is under development. Static executable checks, host tests, and a Switch build are separate from in-game validation. No release is published or installed automatically.
+The native menu hooks, transaction engine, and release tooling are implemented. Host tests, executable checks, and the Switch build are verified; **in-game validation is still pending**. See [validation coverage](docs/VALIDATION.md).
 
 Supported executable Build ID: `8C08B9719E085F91847B5E0F935D9488`.
 
 ```sh
 cargo fmt --check
 cargo test --locked
+python3 -m unittest discover -s scripts -p 'test_*.py'
 cargo skyline build --release
+python3 scripts/verify_nro.py target/aarch64-skyline-switch/release/libfee_batch_ring_meld.nro
 ```
 
 ## Installation layout
@@ -32,7 +34,20 @@ Install Cobalt following its instructions, then place the `engage` directory at 
 
 ### Emulators
 
-Install Cobalt for the emulator, then place `engage` beside Cobalt's existing mod directory as described by its installation guide. Do not put this plugin in the FETH Skyline plugins directory.
+Install Cobalt for the emulator, then extract `engage` into the emulator's **virtual SD card root**. Cobalt plugins do not go in the emulator's per-game mod folder or the FETH Skyline plugins directory. See [Cobalt mod management](https://github.com/Raytwo/Cobalt/wiki/Managing-your-Mods).
+
+## Releases
+
+The workflow follows the FETH mods: stable semantic versions, `VERSION` matched with Cargo, a verified NRO, an installable ZIP, checksums, generated release notes, and verification of the uploaded downloads.
+
+```sh
+python3 scripts/release.py --current
+python3 scripts/release.py --bump patch
+```
+
+Release from a clean `main` synchronized with GitHub. The script pushes the release commit/tag atomically; CI owns validation, compilation, and publication, without repeating full local builds. Only run this after a release has been explicitly requested.
+
+No configuration, logs, or save files are bundled. The confirmation summary uses localized game ring names and English action/cost labels.
 
 ## References
 
