@@ -1,6 +1,6 @@
 [package]
 name = "fee-batch-ring-meld"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Batch Bond Ring melding for Fire Emblem Engage"
 license = "MIT"
