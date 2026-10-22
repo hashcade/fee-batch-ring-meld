@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Verify the structure of a built Skyline NRO."""
+"""Verify NRO structure and imported interfaces against the Cobalt ABI contract."""
 
 import argparse
 from pathlib import Path
 import struct
+from nro_imports import verify_imports
 
 
 def verify_nro(path: Path) -> None:
@@ -26,6 +27,7 @@ def verify_nro(path: Path) -> None:
     raise ValueError("MOD0 header is missing")
   if not any(data[0x40:0x60]):
     raise ValueError("NRO Build ID is empty")
+  verify_imports(data)
 
 
 def main() -> None:
@@ -33,7 +35,7 @@ def main() -> None:
   parser.add_argument("nro", type=Path)
   args = parser.parse_args()
   verify_nro(args.nro)
-  print(f"Verified {args.nro} ({args.nro.stat().st_size:,} bytes)")
+  print(f"Verified {args.nro} ({args.nro.stat().st_size:,} bytes), including Cobalt imports")
 
 
 if __name__ == "__main__":

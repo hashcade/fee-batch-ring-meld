@@ -34,7 +34,7 @@ jobs:
           key: skyline-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'Cargo.toml') }}
           restore-keys: skyline-${{ runner.os }}-
       - run: cargo skyline build --release -- --locked
-      - name: Verify and package NRO
+      - name: Verify Cobalt imports and package NRO
         run: python3 scripts/package.py target/aarch64-skyline-switch/release/libfee_batch_ring_meld.nro --version "$(tr -d '[:space:]' < VERSION)"
       - uses: actions/upload-artifact@v7
         with:
@@ -42,3 +42,20 @@ jobs:
           path: dist/*
           if-no-files-found: error
           retention-days: 14
+
+  startup-smoke:
+    needs: switch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v8
+        with:
+          name: fee-batch-ring-meld
+          path: dist
+      - name: Install AArch64 smoke-test runtime
+        run: python3 -m pip install 'unicorn==2.1.4'
+      - name: Verify compiled initialization paths
+        run: python3 scripts/smoke_startup.py dist/fee_batch_ring_meld.nro

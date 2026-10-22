@@ -17,7 +17,25 @@ The executable is Engage 2.0.0, Build ID `8C08B9719E085F91847B5E0F935D9488`. Sav
 - Inventory entries are looked up transiently. Only immutable database `RingData` is retained during the synchronous loop, allowing verification after the last source inventory entry disappears.
 - A mismatch stops the loop, without retries, extra single transactions, or speculative rollback.
 - `TitleBar.UpdateFooterValues` at `0x021EF170` remains in the original outer flow. The native result/demo sequence is not skipped or looped.
-- All hook entries, native helpers, game ID, display version, and the mapped GNU Build ID are checked before hooks are installed. No cheat code caves are used.
+- All hook entries, native helpers, display version, and the mapped GNU Build ID are checked before hooks are installed. The title ID remains package metadata; startup does not call Skyline's unavailable `get_program_id` export. No cheat code caves are used.
+
+## Cobalt interface compatibility
+
+The ABI contract in `tools/cobalt-imports.json` records the providers of the plugin's runtime imports. It was cross-checked against the official Cobalt 1.31.0 `subsdk9` and the supplied Engage 2.0.0 modules. Only public symbol names and module fingerprints are stored; no executable bytes are included.
+
+`verify_nro.py` follows both PLT and ordinary ELF RELA relocations in the actual NRO. Every referenced undefined symbol must have a known provider in that contract. This runs before packaging locally and in CI, including release builds. Non-relocated declarations such as Skyline's `__nro_header_start` are not loader dependencies.
+
+Version 0.1.0 incorrectly depended on `get_program_id`, which Cobalt does not export. Its removal also lets the linker omit the unused Skyline information/NRO-hook modules and their unsupported imports. Regression tests reject all four missing Skyline interfaces and prevent incompatible artifacts from being packaged.
+
+Passing this check establishes interface availability, not end-to-end game behavior. The pending in-game acceptance checks still apply.
+
+The startup smoke job then executes the compiled NRO's `main` under Unicorn 2.1.4 with modeled SDK/Cobalt calls and synthetic executable fingerprints. It checks that the supported image returns normally after registering exactly nine hooks. Wrong display version, Build ID, instructions, or segment layout must return normally without installing hooks. Unexpected native calls, null jumps, or non-returning initialization fail CI. This sandbox does not load the game or execute the installed hooks.
+
+To repeat the startup check without installing the mod:
+
+```sh
+uv run --with unicorn==2.1.4 python scripts/smoke_startup.py /path/to/fee_batch_ring_meld.nro
+```
 
 ## Local checks
 

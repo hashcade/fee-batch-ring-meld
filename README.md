@@ -22,7 +22,7 @@ python3 scripts/verify_nro.py target/aarch64-skyline-switch/release/libfee_batch
 
 ## Installation layout
 
-Requires [Cobalt](https://github.com/Raytwo/Cobalt). The intended package contains only:
+Requires [Cobalt](https://github.com/Raytwo/Cobalt); the import contract is verified against **Cobalt 1.31.0** with Engage 2.0.0. The intended package contains only:
 
 ```text
 engage/mods/fee_batch_ring_meld/fee_batch_ring_meld.nro
@@ -39,6 +39,8 @@ Install Cobalt for the emulator, then extract `engage` into the emulator's **vir
 ## Releases
 
 The workflow follows the FETH mods: stable semantic versions, `VERSION` matched with Cargo, a verified NRO, an installable ZIP, checksums, generated release notes, and verification of the uploaded downloads.
+
+NRO verification also rejects runtime imports unavailable in the supported Cobalt/game modules. Version 0.1.0 has a startup compatibility bug; use 0.1.1 or later.
 
 ```sh
 python3 scripts/release.py --current

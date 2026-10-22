@@ -10,18 +10,7 @@ import package
 import release
 from verify_game import lz4_block, segments
 from verify_nro import verify_nro
-
-
-def fixture_nro() -> bytes:
-  data = bytearray(0x300)
-  struct.pack_into("<I", data, 4, 0x80)
-  data[0x10:0x14] = b"NRO0"
-  struct.pack_into("<I", data, 0x18, len(data))
-  for position, offset in ((0x20, 0), (0x28, 0x100), (0x30, 0x200)):
-    struct.pack_into("<II", data, position, offset, 0x100)
-  data[0x40:0x60] = bytes(range(32))
-  data[0x80:0x84] = b"MOD0"
-  return bytes(data)
+from nro_fixture import fixture_nro
 
 
 class ToolsTests(unittest.TestCase):
@@ -89,6 +78,7 @@ class ToolsTests(unittest.TestCase):
     self.assertEqual(release.bump_version("1.2.3", "major"), "2.0.0")
 
   def test_version_update_does_not_change_dependency_versions(self):
+    current = release.version()
     with tempfile.TemporaryDirectory() as directory:
       root = Path(directory)
       for name in ("VERSION", "Cargo.toml", "Cargo.lock"):
@@ -98,7 +88,7 @@ class ToolsTests(unittest.TestCase):
         release.write_version("0.2.0")
         self.assertEqual(release.version(), "0.2.0")
       self.assertEqual((root / "Cargo.lock").read_text(), previous_lock.replace(
-        'name = "fee-batch-ring-meld"\nversion = "0.1.0"',
+        f'name = "fee-batch-ring-meld"\nversion = "{current}"',
         'name = "fee-batch-ring-meld"\nversion = "0.2.0"'))
 
 
