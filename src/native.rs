@@ -2,7 +2,7 @@
 
 use crate::{
   batch::{Cost, Inventory, Plan, Stock},
-  profile,
+  confirmation, profile,
   session::Selection,
 };
 use core::{ffi::c_void, ptr};
@@ -110,17 +110,21 @@ unsafe fn stock(rnid: Object, source: Object) -> Option<Stock> {
   })
 }
 
-unsafe fn label(data: Object) -> Option<String> {
+unsafe fn ring_name(data: Object) -> Option<String> {
   let mid: Object = unsafe { field(data, 0x28) };
   if mid.is_null() {
     return None;
   }
   let get: unsafe extern "C" fn(Object, Method) -> Object =
     unsafe { core::mem::transmute(base() + profile::MESS_GET) };
-  let name = unsafe { text(get(mid, NONE)) }?;
-  let rank: i32 = unsafe { field(data, 0x4C) };
-  let letter = *['C', 'B', 'A', 'S'].get(usize::try_from(rank).ok()?)?;
-  Some(format!("{name} {letter}"))
+  unsafe { text(get(mid, NONE)) }
+}
+
+fn text_language() -> i32 {
+  // Use the game's current text language, not the console locale or voices.
+  let get: unsafe extern "C" fn(Method) -> i32 =
+    unsafe { core::mem::transmute(base() + profile::GET_LANGUAGE) };
+  unsafe { get(NONE) }
 }
 
 pub unsafe fn selection(menu: Object, source: Object, cost: Cost) -> Option<Selection> {
@@ -144,13 +148,8 @@ pub unsafe fn selection(menu: Object, source: Object, cost: Cost) -> Option<Sele
     return None;
   }
   let plan = Plan::new(cost, unsafe { stock(rnid, source) }?)?;
-  let source_name = unsafe { label(source) }?;
-  let output_name = unsafe { label(output) }?;
-  let total = plan.total_cost();
-  let prompt = format!(
-    "{source_name} ×{} → {output_name} ×{}\n\nCost: {} Bond Fragments\nMeld this batch?",
-    total.rings, plan.count, total.fragments
-  );
+  let name = unsafe { ring_name(output) }?;
+  let prompt = confirmation::format(text_language(), &name, rank, plan)?;
   Some(Selection { menu: menu as usize, rnid: id, prompt, plan })
 }
 

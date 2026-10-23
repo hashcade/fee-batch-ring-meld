@@ -1,6 +1,7 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 
 pub mod batch;
+pub mod confirmation;
 pub mod profile;
 pub mod session;
 

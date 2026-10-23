@@ -9,7 +9,7 @@ The executable is Engage 2.0.0, Build ID `8C08B9719E085F91847B5E0F935D9488`. Sav
 ## Native integration
 
 - `OnDecideSynthesis` receives and retains the original single-meld costs.
-- Only during that synchronous call may `YesNoDialog.CreateBind` substitute the batch summary. The existing buttons and callbacks remain unchanged. The summary uses game-localized ring names and English action/cost labels.
+- Only during that synchronous call may `YesNoDialog.CreateBind` substitute the batch summary. The existing buttons and callbacks remain unchanged. The two-line summary shows the ring name once, source/result ranks and counts, and total fragment cost. Ring names come from the game; the fragment label follows `App.Language.GetLang`, not system locale or voice language. All 12 game text-language IDs are covered, with English fallback for unknown IDs.
 - The menu's affirmative callback arms the plan. A plan cannot run unless its batch summary was successfully supplied to the native dialog.
 - The confirmed plan survives the original menu destruction, then transfers once to `ExecuteRingMerge`.
 - `SynthesisRingExecute.Do` uses its trampoline once per transaction. Its return value is accumulated as a new-acquisition flag, not used as a success test.
@@ -49,6 +49,8 @@ python3 scripts/verify_nro.py target/aarch64-skyline-switch/release/libfee_batch
 
 ## Pending in-game acceptance
 
+The user confirmed working batch melding in version 0.1.1. This does not independently establish every edge case below or the rendering of later localized confirmation text.
+
 Do not install this development build into a user's game without approval. Use a separate test save; do not overwrite the primary save.
 
 - C→B, B→A, A→S; multiple groups, leftovers, one group, insufficient resources.
@@ -61,4 +63,4 @@ Do not install this development build into a user's game without approval. Use a
 - An active fragment-refill cheat must not extend the confirmed count. Temporarily disable that cheat with the user's agreement when verifying exact persistent fragment deductions.
 - Unsupported executable or conflicting preinstalled hooks must leave original behavior unchanged.
 
-Runtime menu rendering, animation completion, and save/reload behavior remain unverified until these tests are actually performed.
+The compact localized confirmation needs in-game visual verification. Edge cases, exact animation behavior, and save/reload comparisons remain pending unless explicitly tested.

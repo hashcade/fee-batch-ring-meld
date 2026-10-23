@@ -8,7 +8,7 @@ The original menu and one original result presentation are retained. No hotkeys,
 
 ## Development
 
-The native menu hooks, transaction engine, and release tooling are implemented. Host tests, executable checks, and the Switch build are verified; **in-game validation is still pending**. See [validation coverage](docs/VALIDATION.md).
+The native menu hooks, transaction engine, and release tooling are implemented. The user has confirmed that batch melding works in-game in 0.1.1. Later UI changes and the remaining edge-case checks are tracked separately in [validation coverage](docs/VALIDATION.md).
 
 Supported executable Build ID: `8C08B9719E085F91847B5E0F935D9488`.
 
@@ -49,7 +49,12 @@ python3 scripts/release.py --bump patch
 
 Release from a clean `main` synchronized with GitHub. The script pushes the release commit/tag atomically; CI owns validation, compilation, and publication, without repeating full local builds. Only run this after a release has been explicitly requested.
 
-No configuration, logs, or save files are bundled. The confirmation summary uses localized game ring names and English action/cost labels.
+No configuration, logs, or save files are bundled. The two-line confirmation follows the game's current text language, including Japanese, English, French, Spanish, German, Italian, Traditional Chinese, Simplified Chinese, and Korean. Regional English/French/Spanish variants are supported. Ring names and confirmation buttons retain the game's localization; no manual language setting is needed.
+
+```text
+Minerva A ×20 → S ×5
+Bond Fragments ×50000
+```
 
 ## References
 

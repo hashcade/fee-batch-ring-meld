@@ -24,6 +24,7 @@ pub const SINGLETON_GET: usize = 0x001C3B70;
 pub const USER_DATA_METHOD: usize = 0x062840F0;
 pub const STRING_NEW_SIZE: usize = 0x0044A168;
 pub const MESS_GET: usize = 0x025C9240;
+pub const GET_LANGUAGE: usize = 0x01BDBC80;
 
 // All hook entries and directly invoked native functions are checked before
 // installing any hook. Semantic call-site checks also pin the transaction ABI.
@@ -60,4 +61,6 @@ pub const TEXT_SIGNATURES: &[(usize, [u32; 4])] = &[
   (0x024245D0, [0xF9401400, 0xD65F03C0, 0xD503201F, 0xD503201F]),
   (0x02424650, [0xB9404800, 0xD65F03C0, 0xD503201F, 0xD503201F]),
   (0x02424670, [0xB9404C00, 0xD65F03C0, 0xD503201F, 0xD503201F]),
+  (0x01BDBC80, [0xA9BE7BFD, 0xA9014FF4, 0x910003FD, 0xB00239D4]),
+  (0x01BDBCCC, [0xF9400260, 0xF9405C08, 0xB9400100, 0xA9414FF4]),
 ];
